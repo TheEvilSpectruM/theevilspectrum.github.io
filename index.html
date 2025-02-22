@@ -1,37 +1,307 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TheEvilSpectrum</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/png" href="ghost-emoji.png">
+  <meta charset="UTF-8">
+  <title>Effet Machine à Écrire, Projects &amp; Links</title>
+  <style>
+    /* Taille de police globale définie sur 1.5em */
+    body {
+      background-color: #000;
+      color: #0f0;
+      font-family: 'Courier New', Courier, monospace;
+      margin: 0;
+      padding: 0;
+      font-size: 1.5em;
+    }
+    /* Section Terminal */
+    .terminal {
+      margin: 15vh auto 0;
+      text-shadow: 0 0 2px #0f0, 0 0 4px #0f0, 0 0 6px #0f0;
+      min-width: 40ch;
+      text-align: center;
+    }
+    .terminal span {
+      font-size: 1em;
+    }
+    .cursor {
+      display: inline-block;
+      width: 10px;
+      background-color: #0f0;
+      margin-left: 2px;
+      animation: blink 0.8s step-start infinite;
+      box-shadow: 0 0 2px #0f0, 0 0 4px #0f0;
+    }
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+    /* Sections Projects et Links (styles identiques) */
+    .projects, .links {
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 0 20px;
+      text-align: left;
+    }
+    .projects h2, .links h2 {
+      margin: 0 0 20px;
+      font-size: 1em;
+      text-shadow: 0 0 2px #0f0, 0 0 4px #0f0;
+      text-align: center;
+    }
+    .projects ul, .links ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .projects li, .links li {
+      position: relative;
+      padding: 10px 30px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    /* État normal : symbole 🁢 */
+    .projects li:before, .links li:before {
+      content: "🁢 ";
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      transition: all 0.3s ease;
+    }
+    .projects li:after, .links li:after {
+      content: "";
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    /* Au hover : passage en crochets avec léger agrandissement */
+    .projects li:hover:before, .links li:hover:before {
+      content: "[ ";
+      transform: translateY(-50%) scale(1.1);
+    }
+    .projects li:hover:after, .links li:hover:after {
+      content: " ]";
+      opacity: 1;
+      transform: translateY(-50%) scale(1.1);
+    }
+    /* Pour que les liens hériteront de la couleur et ne soient pas soulignés */
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+  </style>
 </head>
-
 <body>
+  <!-- Section Terminal avec effet de typage -->
+  <div class="terminal" id="terminal">
+    <span id="line1"></span><span id="cursor1" class="cursor">&nbsp;</span>
+  </div>
 
-    <div id="centeredText">TheEvilSpectrum</div>
+  <!-- Section Projects -->
+  <div class="projects">
+    <h2 id="projects-title"></h2>
+    <ul id="projects-list"></ul>
+  </div>
 
-    <button class="btn-index" onclick="window.location.href='index.html';">About</button>
+  <!-- Section Links -->
+  <div class="links">
+    <h2 id="links-title"></h2>
+    <ul id="links-list"></ul>
+  </div>
 
-    <button class="btn-creations" onclick="window.location.href='creations.html';">Creations</button>
+  <script>
+    // Pour changer la vitesse, modifiez ces constantes :
+    const TYPE_SPEED = 80;     // Vitesse de frappe en ms (durée entre chaque caractère)
+    const LINE_DELAY = 400;    // Délai entre lignes/éléments en ms
+    const INITIAL_DELAY = 1500; // Délai initial avant démarrage en ms
 
-    <p class="paragraph-1">Hey ! my name Is EvilSpectrum <br>
-        i am a developper (builder) in Roblox Studio <br>
-        I like Html, css and javascript !</p>
+    // Fonction générique de typewriter
+    function typeText(element, text, callback) {
+      let index = 0;
+      function typeChar() {
+        if (index < text.length) {
+          element.innerHTML += text.charAt(index);
+          index++;
+          setTimeout(typeChar, TYPE_SPEED);
+        } else if (callback) {
+          callback();
+        }
+      }
+      typeChar();
+    }
 
-    <div class="social-icons">
-        <a href="https://discord.com/users/1075319939306639412" target="_blank">
-            <img src="discord_logo.png" alt="Discord" class="icon">
-        </a>
- 
-        <a href="https://www.roblox.com/users/3782572743/profile" target="_blank">
-            <img src="roblox-logo.jpg" alt="Roblox" class="icon">
-        </a>
-    </div>
+    // Textes à taper dans le terminal
+    const terminalTexts = [
+      "TheEvilSpectrum",
+      "Roblox Studio Builder",
+      "Html, Css, Javascript"
+    ];
+
+    // Démarrage du typage pour le terminal
+    function startTyping() {
+      const terminal = document.getElementById("terminal");
+      const line1 = document.getElementById("line1");
+
+      typeText(line1, terminalTexts[0], function() {
+        const cursor1 = document.getElementById("cursor1");
+        if (cursor1) { cursor1.parentNode.removeChild(cursor1); }
+        terminal.appendChild(document.createElement("br"));
+        terminal.appendChild(document.createElement("br"));
+
+        const line2 = document.createElement("span");
+        line2.id = "line2";
+        terminal.appendChild(line2);
+        const cursor2 = document.createElement("span");
+        cursor2.id = "cursor2";
+        cursor2.className = "cursor";
+        cursor2.innerHTML = "&nbsp;";
+        terminal.appendChild(cursor2);
+
+        setTimeout(function() {
+          typeText(line2, terminalTexts[1], function() {
+            if (document.getElementById("cursor2")) {
+              document.getElementById("cursor2").parentNode.removeChild(document.getElementById("cursor2"));
+            }
+            terminal.appendChild(document.createElement("br"));
+            const line3 = document.createElement("span");
+            line3.id = "line3";
+            terminal.appendChild(line3);
+            const cursor3 = document.createElement("span");
+            cursor3.id = "cursor3";
+            cursor3.className = "cursor";
+            cursor3.innerHTML = "&nbsp;";
+            terminal.appendChild(cursor3);
+
+            setTimeout(function() {
+              typeText(line3, terminalTexts[2], function() {
+                if (document.getElementById("cursor3")) {
+                  document.getElementById("cursor3").parentNode.removeChild(document.getElementById("cursor3"));
+                }
+                // Une fois le terminal terminé, taper le titre "Projects"
+                typeProjectsTitle(function() {
+                  // Puis taper les projets et lancer la section "Links"
+                  startProjectTyping(function() {
+                    typeLinksTitle(startLinksTyping);
+                  });
+                });
+              });
+            }, LINE_DELAY);
+          });
+        }, LINE_DELAY);
+      });
+    }
+
+    // Fonction pour taper le titre "Projects" avec curseur
+    function typeProjectsTitle(callback) {
+      const titleElement = document.getElementById("projects-title");
+      const titleCursor = document.createElement("span");
+      titleCursor.id = "projects-title-cursor";
+      titleCursor.className = "cursor";
+      titleCursor.innerHTML = "&nbsp;";
+      titleElement.parentNode.insertBefore(titleCursor, titleElement.nextSibling);
+      typeText(titleElement, "Projects", function() {
+        if (document.getElementById("projects-title-cursor")) {
+          document.getElementById("projects-title-cursor").parentNode.removeChild(document.getElementById("projects-title-cursor"));
+        }
+        if (callback) callback();
+      });
+    }
+
+    // Liste des projets avec URL (modifiez ces URL selon vos besoins)
+    const projects = [
+      { text: "Scary Things BETA", url: "https://www.roblox.com/games/15587007829/Scary-Things-BETA" },
+      { text: "McLennan Courthouse SHOWCASE", url: "https://www.roblox.com/games/76489910681746/McLennan-Courthouse-EXTERIOR" },
+      { text: "Spectrum's Community", url: "https://www.roblox.com/communities/34916784/Spectrums-Community#!/about" }
+    ];
+
+    // Démarrage du typage des projets de manière séquentielle
+    function startProjectTyping(callback) {
+      const projectsList = document.getElementById("projects-list");
+      function typeNextProject(i) {
+        if (i < projects.length) {
+          const li = document.createElement("li");
+          const a = document.createElement("a");
+          a.href = projects[i].url;
+          a.target = "_blank";
+          a.style.color = "inherit";
+          a.style.textDecoration = "none";
+          li.appendChild(a);
+          const cursor = document.createElement("span");
+          cursor.className = "cursor";
+          cursor.innerHTML = "&nbsp;";
+          li.appendChild(cursor);
+          projectsList.appendChild(li);
+
+          typeText(a, projects[i].text, function() {
+            li.removeChild(cursor);
+            setTimeout(function() {
+              typeNextProject(i + 1);
+            }, LINE_DELAY);
+          });
+        } else if (callback) {
+          callback();
+        }
+      }
+      typeNextProject(0);
+    }
+
+    // Fonction pour taper le titre "Links" avec curseur
+    function typeLinksTitle(callback) {
+      const titleElement = document.getElementById("links-title");
+      const titleCursor = document.createElement("span");
+      titleCursor.id = "links-title-cursor";
+      titleCursor.className = "cursor";
+      titleCursor.innerHTML = "&nbsp;";
+      titleElement.parentNode.insertBefore(titleCursor, titleElement.nextSibling);
+      typeText(titleElement, "Links", function() {
+        if (document.getElementById("links-title-cursor")) {
+          document.getElementById("links-title-cursor").parentNode.removeChild(document.getElementById("links-title-cursor"));
+        }
+        if (callback) callback();
+      });
+    }
+
+    // Liste des links avec URL
+    const links = [
+      { text: "Discord", url: "https://discord.com/users/1075319939306639412" },
+      { text: "Github", url: "https://github.com/TheEvilSpectruM" },
+      { text: "X (Twitter)", url: "https://x.com/TheEvilSpectrum" },
+      { text: "Roblox", url: "https://www.roblox.com/users/3782572743/profile" }
+    ];
+
+    // Démarrage du typage des links de manière séquentielle
+    function startLinksTyping() {
+      const linksList = document.getElementById("links-list");
+      function typeNextLink(i) {
+        if (i < links.length) {
+          const li = document.createElement("li");
+          const a = document.createElement("a");
+          a.href = links[i].url;
+          a.target = "_blank";
+          a.style.color = "inherit";
+          a.style.textDecoration = "none";
+          li.appendChild(a);
+          const cursor = document.createElement("span");
+          cursor.className = "cursor";
+          cursor.innerHTML = "&nbsp;";
+          li.appendChild(cursor);
+          linksList.appendChild(li);
+
+          typeText(a, links[i].text, function() {
+            li.removeChild(cursor);
+            setTimeout(function() {
+              typeNextLink(i + 1);
+            }, LINE_DELAY);
+          });
+        }
+      }
+      typeNextLink(0);
+    }
+
+    // Lancer le tout après le délai initial
+    setTimeout(startTyping, INITIAL_DELAY);
+  </script>
 </body>
-
 </html>
