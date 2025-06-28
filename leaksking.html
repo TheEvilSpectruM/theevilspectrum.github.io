@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Assets Download Page</title>
+  <style>
+    :root {
+      --main-focus: #2d8cf0;
+      --font-color: #323232;
+      --bg-color-sub: #dedede;
+      --bg-color: #eee;
+      --main-color: #323232;
+    }
+
+    body {
+      margin: 0;
+      padding: 2rem;
+      background-color: #f9f9f9;
+      font-family: sans-serif;
+      color: var(--font-color);
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--main-color);
+      margin-bottom: 3rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 0.5rem; /* Très petit espace entre les cartes */
+    }
+
+    .card, .code-entry {
+      max-width: 320px;
+      /* margin: 0 auto; */  /* Supprimé pour que les cartes soient collées */
+      background-color: var(--bg-color);
+      border: 2px solid var(--main-color);
+      box-shadow: 4px 4px var(--main-color);
+      border-radius: 10px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card h2, .code-entry h2 {
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .button {
+      width: 100%;
+      height: 40px;
+      cursor: pointer;
+      border: 2px solid var(--main-color);
+      box-shadow: 4px 4px var(--main-color);
+      background-color: var(--bg-color);
+      border-radius: 10px;
+      font-weight: 600;
+      color: var(--font-color);
+      font-family: sans-serif;
+      margin-top: 1rem;
+    }
+
+    .button.download {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .button.download .button__text,
+    .button.download .button__icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(1);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .button.download .button__icon {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.5);
+    }
+
+    .button.download:hover .button__text {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.5);
+    }
+
+    .button.download:hover .button__icon {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .button.download:active {
+      transform: translate(4px, 4px);
+      box-shadow: 0 0 var(--main-color);
+    }
+
+    .svg {
+      width: 20px;
+      fill: var(--main-color);
+    }
+
+    .code-entry input {
+      padding: 0.5rem;
+      font-size: 1rem;
+      border: 2px solid var(--main-color);
+      border-radius: 6px;
+      width: 320px;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    .code-entry button {
+      width: 320px;
+      box-sizing: border-box;
+      margin-top: 1rem;
+    }
+
+    #assets-section {
+      display: none;
+      margin: 2rem 0; /* même marge haut et bas */
+    }
+  </style>
+</head>
+<body>
+
+  <div class="code-entry" id="code-entry">
+    <h2>Insert code</h2>
+    <input type="text" id="code-input" placeholder="Enter access code" />
+    <button class="button" id="check-code">Check code</button>
+  </div>
+
+  <div id="assets-section">
+    <h1>Assets Download Page</h1>
+    <div class="grid" id="assets-container"></div>
+  </div>
+
+  <!-- SVG Icon -->
+  <svg style="display:none;">
+    <symbol id="icon-download" viewBox="0 0 35 35">
+      <path d="M17.5,22.131a1.249,1.249,0,0,1-1.25-1.25V2.187a1.25,1.25,0,0,1,2.5,0V20.881A1.25,1.25,0,0,1,17.5,22.131Z"></path>
+      <path d="M17.5,22.693a3.189,3.189,0,0,1-2.262-.936L8.487,15.006a1.249,1.249,0,0,1,1.767-1.767l6.751,6.751a.7.7,0,0,0,.99,0l6.751-6.751a1.25,1.25,0,0,1,1.768,1.767l-6.752,6.751A3.191,3.191,0,0,1,17.5,22.693Z"></path>
+      <path d="M31.436,34.063H3.564A3.318,3.318,0,0,1,.25,30.749V22.011a1.25,1.25,0,0,1,2.5,0v8.738a.815.815,0,0,0,.814.814H31.436a.815.815,0,0,0,.814-.814V22.011a1.25,1.25,0,1,1,2.5,0v8.738A3.318,3.318,0,0,1,31.436,34.063Z"></path>
+    </symbol>
+  </svg>
+
+  <script>
+    const correctCode = "REWRDS$5278";
+
+    document.getElementById('check-code').addEventListener('click', () => {
+      const codeInput = document.getElementById('code-input');
+      const checkButton = document.getElementById('check-code');
+      const code = codeInput.value;
+
+      if (code === correctCode) {
+        document.getElementById('code-entry').style.display = 'none';
+        document.getElementById('assets-section').style.display = 'block';
+        renderAssets();
+      } else {
+        const originalText = checkButton.textContent;
+        checkButton.textContent = 'Invalid!';
+        checkButton.disabled = true;
+
+        setTimeout(() => {
+          checkButton.textContent = originalText;
+          checkButton.disabled = false;
+        }, 2000);
+      }
+    });
+
+    function renderAssets() {
+      const container = document.getElementById('assets-container');
+      container.innerHTML = '';
+
+      for (let i = 1; i <= 5; i++) {
+        container.innerHTML += `
+          <div class="card">
+            <h2>Asset ${i}</h2>
+            <button class="button download" type="button">
+              <span class="button__text">Download</span>
+              <span class="button__icon">
+                <svg class="svg" viewBox="0 0 35 35">
+                  <use href="#icon-download"></use>
+                </svg>
+              </span>
+            </button>
+          </div>
+        `;
+      }
+    }
+  </script>
+
+</body>
+</html>
