@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>TheEvilSpectrum</title>
   <style>
-    /* Taille de police globale définie sur 1.5em */
     body {
       background-color: #000;
       color: #0f0;
@@ -14,7 +13,6 @@
       font-size: 1.5em;
       user-select: none;
     }
-    /* Section Terminal */
     .terminal {
       margin: 15vh auto 0;
       text-shadow: 0 0 2px #0f0, 0 0 4px #0f0, 0 0 6px #0f0;
@@ -35,7 +33,6 @@
     @keyframes blink {
       50% { opacity: 0; }
     }
-    /* Sections Projects et Links (styles identiques) */
     .projects, .links {
       max-width: 600px;
       margin: 40px auto;
@@ -59,7 +56,6 @@
       cursor: pointer;
       transition: all 0.3s ease;
     }
-    /* État normal : symbole 🁢 */
     .projects li:before, .links li:before {
       content: "🁢 ";
       position: absolute;
@@ -77,7 +73,6 @@
       opacity: 0;
       transition: opacity 0.3s ease, transform 0.3s ease;
     }
-    /* Au hover : passage en crochets avec léger agrandissement */
     .projects li:hover:before, .links li:hover:before {
       content: "[ ";
       transform: translateY(-50%) scale(1.1);
@@ -87,7 +82,6 @@
       opacity: 1;
       transform: translateY(-50%) scale(1.1);
     }
-    /* Pour que les liens hériteront de la couleur et ne soient pas soulignés */
     a {
       color: inherit;
       text-decoration: none;
@@ -95,37 +89,35 @@
   </style>
 </head>
 <body>
-  <!-- Section Terminal avec effet de typage -->
   <div class="terminal" id="terminal">
     <span id="line1"></span><span id="cursor1" class="cursor">&nbsp;</span>
   </div>
 
-  <!-- Section Projects -->
   <div class="projects">
     <h2 id="projects-title"></h2>
     <ul id="projects-list"></ul>
   </div>
 
-  <!-- Section Links -->
   <div class="links">
     <h2 id="links-title"></h2>
     <ul id="links-list"></ul>
   </div>
 
   <script>
-    // Pour changer la vitesse, modifiez ces constantes :
-    const TYPE_SPEED = 80;     // Vitesse de frappe en ms (durée entre chaque caractère)
-    const LINE_DELAY = 400;    // Délai entre lignes/éléments en ms
-    const INITIAL_DELAY = 1500; // Délai initial avant démarrage en ms
+    // Configuration centralisée
+    const TYPING_CONFIG = {
+      speed: 15,         // Vitesse entre chaque caractère (ms)
+      delayBetween: 0, // Délai entre éléments (ms)
+      initialDelay: 50  // Délai initial avant démarrage (ms)
+    };
 
-    // Fonction générique de typewriter
     function typeText(element, text, callback) {
       let index = 0;
       function typeChar() {
         if (index < text.length) {
           element.innerHTML += text.charAt(index);
           index++;
-          setTimeout(typeChar, TYPE_SPEED);
+          setTimeout(typeChar, TYPING_CONFIG.speed);
         } else if (callback) {
           callback();
         }
@@ -133,14 +125,12 @@
       typeChar();
     }
 
-    // Textes à taper dans le terminal
     const terminalTexts = [
       "TheEvilSpectrum",
       "Roblox Studio Builder",
       "Html, Css, Javascript"
     ];
 
-    // Démarrage du typage pour le terminal
     function startTyping() {
       const terminal = document.getElementById("terminal");
       const line1 = document.getElementById("line1");
@@ -180,21 +170,18 @@
                 if (document.getElementById("cursor3")) {
                   document.getElementById("cursor3").parentNode.removeChild(document.getElementById("cursor3"));
                 }
-                // Une fois le terminal terminé, taper le titre "Projects"
                 typeProjectsTitle(function() {
-                  // Puis taper les projets et lancer la section "Links"
                   startProjectTyping(function() {
                     typeLinksTitle(startLinksTyping);
                   });
                 });
               });
-            }, LINE_DELAY);
+            }, TYPING_CONFIG.delayBetween);
           });
-        }, LINE_DELAY);
+        }, TYPING_CONFIG.delayBetween);
       });
     }
 
-    // Fonction pour taper le titre "Projects" avec curseur
     function typeProjectsTitle(callback) {
       const titleElement = document.getElementById("projects-title");
       const titleCursor = document.createElement("span");
@@ -210,14 +197,15 @@
       });
     }
 
-    // Liste des projets avec URL (modifiez ces URL selon vos besoins)
     const projects = [
       { text: "Scary Things BETA", url: "https://www.roblox.com/games/15587007829/Scary-Things-BETA" },
       { text: "McLennan Courthouse SHOWCASE", url: "https://www.roblox.com/games/76489910681746/McLennan-Courthouse-EXTERIOR" },
-      { text: "Spectrum's Community", url: "https://www.roblox.com/communities/34916784/Spectrums-Community#!/about" }
+      { text: "Don't Lose!", url: "https://www.roblox.com/games/137160751110107/Do-Not-Lose" },
+      { text: "Office [In Progress]", url: "" },
+      { text: "Ligne 13 BIS [In Progress]", url: "" },
+      { text: "TCL Transport [In Progress]", url: "" }
     ];
 
-    // Démarrage du typage des projets de manière séquentielle
     function startProjectTyping(callback) {
       const projectsList = document.getElementById("projects-list");
       function typeNextProject(i) {
@@ -239,7 +227,7 @@
             li.removeChild(cursor);
             setTimeout(function() {
               typeNextProject(i + 1);
-            }, LINE_DELAY);
+            }, TYPING_CONFIG.delayBetween);
           });
         } else if (callback) {
           callback();
@@ -248,7 +236,6 @@
       typeNextProject(0);
     }
 
-    // Fonction pour taper le titre "Links" avec curseur
     function typeLinksTitle(callback) {
       const titleElement = document.getElementById("links-title");
       const titleCursor = document.createElement("span");
@@ -264,15 +251,14 @@
       });
     }
 
-    // Liste des links avec URL
     const links = [
       { text: "Discord", url: "https://discord.com/users/1075319939306639412" },
       { text: "Github", url: "https://github.com/TheEvilSpectruM" },
       { text: "X (Twitter)", url: "https://x.com/TheEvilSpectrum" },
-      { text: "Roblox", url: "https://www.roblox.com/users/3782572743/profile" }
+      { text: "Roblox", url: "https://www.roblox.com/users/3782572743/profile" },
+      { text: "Spectrum's Community", url: "https://www.roblox.com/communities/34916784/Spectrums-Community#!/about" }
     ];
 
-    // Démarrage du typage des links de manière séquentielle
     function startLinksTyping() {
       const linksList = document.getElementById("links-list");
       function typeNextLink(i) {
@@ -294,15 +280,14 @@
             li.removeChild(cursor);
             setTimeout(function() {
               typeNextLink(i + 1);
-            }, LINE_DELAY);
+            }, TYPING_CONFIG.delayBetween);
           });
         }
       }
       typeNextLink(0);
     }
 
-    // Lancer le tout après le délai initial
-    setTimeout(startTyping, INITIAL_DELAY);
+    setTimeout(startTyping, TYPING_CONFIG.initialDelay);
   </script>
 </body>
 </html>
